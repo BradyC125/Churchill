@@ -17,17 +17,17 @@ async def isAdmin(member):
 
 async def endGame(cID):
   game = currentGames[cID]
-  //End game
+  #End game
 
 async def join(member, cID):
-  if ((cID in currentGames) and !(currentGames[cID].gameStarted) and !(member in currentGames[cID].innedPlayerlist)):
+  if ((cID in currentGames) and (not currentGames[cID].gameStarted) and (not member in currentGames[cID].innedPlayerlist)):
     currentGames[cID].innedPlayerlist.append(member)
   
   elif not (cID in currentGames):
     currentGames[cID] = gameClass.GameInstance(client, client.get_channel(cID))
 
 async def start(member, cID):
-  if !(cID in currentGames):
+  if not (cID in currentGames):
     return False
   
   game = currentGames[cID]
