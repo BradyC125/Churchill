@@ -20,15 +20,15 @@ async def main(game):
   
   game.presidentCounter = random.randrange(0,game.numOfPlayers)
   
-  while !game.over:
+  while not game.over:
     await game.genPolicies()
     playerElected = False
     failedElections = 0
-    while !playerElected:
+    while not playerElected:
       await game.assignPres()
       await game.nomination()
       playerElected = await game.vote()
-      if !playerElected:
+      if not playerElected:
         if failedElections == 2:
           threeFailures(game)
         else:
@@ -37,7 +37,7 @@ async def main(game):
     game.chancellor = game.nominatedPlayer
     game.nominatedPlayer = False
     await game.checkIfWon()
-    if !game.over:
+    if not game.over:
       await game.client.send_message(game.gameChannel, ("The vote succeeded! President {} and Chancellor {} "
                                                         "are now choosing policies.").format(game.president.name, game.chancellor.name))
       game.lastChancellor = game.president
