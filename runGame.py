@@ -6,32 +6,6 @@ import gameClass
 
 async def threeFailures(game):
   #TODO
-  
-async def sendRolePMs(game):
-  client = game.client
-  for player in game.innedPlayerlist:
-    if player == game.hitler:
-      if fascists.lenght == 1:
-        await client.send_message(player, "You're Hitler. Your teammate is {}".format(game.facists[0].name))
-      else:
-        await client.send_message(player, "You're Hitler. Because you have more than one teammate, you don't get to know who they are")
-    elif player in game.fascists:
-      if game.fascists.length == 1:
-        await client.send_message(player, "You're a facist. Hitler is {}".format(game.hitler.name))
-      elif game.facists.lenght == 2:
-        if game.facists[0] == player:
-          await client.send_message(player, "You're a facist. Hitler is {} and your teammate is {}".format(game.hitler.name, game.facists[1].name))
-        else:
-          await client.send_message(player, "You're a facist. Hitler is {} and your teammate is {}".format(game.hitler.name, game.facists[0].name))
-      else:
-        if game.facists[0] == player:
-          await client.send_message(player, "You're a facist. Hitler is {} and your teammates are {} and {}".format(game.hitler.name, game.facists[1].name, game.facists[2].name))
-        elif game.facists[1] == player:
-          await client.send_message(player, "You're a facist. Hitler is {} and your teammates are {} and {}".format(game.hitler.name, game.facists[0].name, game.facists[2].name))
-        else:
-          await client.send_message(player, "You're a facist. Hitler is {} and your teammates are {} and {}".format(game.hitler.name, game.facists[1].name, game.facists[0].name))
-    else:
-      await client.send_message(player, "You're a liberal")
 
 async def main(game):
   numOfPlayers = len(game.innedPlayerlist)
@@ -42,7 +16,7 @@ async def main(game):
   else:
     game.addRoles(1)
   
-  await sendRolePMs(game)
+  await game.sendRolePMs()
   
   game.presidentCounter = random.randrange(0,game.numOfPlayers)
   
