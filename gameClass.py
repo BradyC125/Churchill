@@ -44,14 +44,14 @@ class GameInstance:
     self.president = self.innedPlayerlist[self.presidentCounter%self.numOfPlayers]
     
   def nominations(self):
-    \\TODO
+    #TODO
   
   def countVote(self):
-    \\TODO
+    #TODO
     
   def vote(self): 
-    \\Invoke self.countVote()
-    \\TODO
+    #Invoke self.countVote()
+    #TODO
     
   def genPolicies(self):
     if len(self.policyDeck) > 3:
@@ -68,17 +68,17 @@ class GameInstance:
       await self.genPolicies()
             
   def presPolicies(self):
-    \\TODO
+    #TODO
     
   def chancellorPolicies(self):
-    \\TODO
+    #TODO
     
   def addPolicy(self): 
-    \\Change self.fullDeck
-    \\TODO
+    #Change self.fullDeck
+    #TODO
     
   def checkIfWon(self):
-    \\TODO
+    #TODO
     
-  \\Add Pres Powers
+  #Add Pres Powers
   
