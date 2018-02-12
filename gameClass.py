@@ -16,7 +16,6 @@ class GameInstance:
     self.lastChancellor = False
     self.lastPresident = False
     self.peekEnabled = False
-    self.voteArray = {}
     self.turnDeck = []
     self.fascists = []
     self.fullDeck = ["Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist",
@@ -81,10 +80,6 @@ class GameInstance:
           if self.nominatedPlayer in self.innedPlayerlist:
             if (self.nominatedPlayer != self.lastChancellor) and (self.nominatedPlayer != self.lastPresident):
               playerNominated = True
-              await client.send_message(self.gameChannel, ("President {} has nominated {} for Chancellor. Please react to this message "
-                                                           "to vote.").format(self.president.name, self.nominatedPlayer.name))
-              #Add reactions
-              await self.countVote()
             else:
               self.nominatedPlayer = False
               await client.send_message(self.gameChannel, "I'm sorry, but your nominee was term limited! Please nominate someone else.")
@@ -96,13 +91,40 @@ class GameInstance:
             await client.send_message(self.gameChannel, "Please mention the person you're nominating like this: `@user`")
             warningGiven = True
   
-  def countVote(self):
-    #TODO
-    
-  def vote(self): 
-    #Invoke self.countVote()
-    #TODO
-    
+  def vote(self):
+    voteArray = {}
+    votesCast = 0
+    tempMessage = await client.send_message(self.gameChannel, ("President {} has nominated {} for Chancellor. Please react to this message "
+                                                               "to vote.").format(self.president.name, self.nominatedPlayer.name))
+    await client.add_reaction(tempMessage, '✔')
+    await client.add_reaction(tempMessage, '❌')
+    for player in self.innedPlayerlist:
+      voteArray[player] = "Uncast"
+    while not votesCast == len(voteArray):
+      reaction = await self.client.wait_for_reaction(['✔','❌'],message = tempMessage)
+      if reaction.user in self.innedPlayerlist:
+        if reaction.emoji == '✔':
+          castVote = "Yes"
+        else:
+          castVote = "No"
+        if voteArray[reaction.user] == "Uncast":
+          await self.client.send_message(self.gameChannel, "{} voted {}".format(reaction.user, castVote.lower()))
+          voteArray[reaction.user] = castVote
+          votesCast++
+        elif not castVote == voteArray[reaction.user]:
+          await self.client.send_message(self.gameChannel, "{} changed their vote to {}".format(reaction.user, castVote.lower()))
+          voteArray[reaction.user] = castVote
+    yes = 0
+    no = 0
+    for player in self.innedPlayerlist:
+      if voteArray[player] == "Yes":
+        yes++
+      else:
+        no++
+    if not yes > no:
+      await self.client.send_message(self.gameChannel, "The election failed."
+    return (yes > no)
+      
   def genPolicies(self):
     if len(self.policyDeck) > 3:
       i = 0
@@ -118,17 +140,63 @@ class GameInstance:
       await self.genPolicies()
             
   def presPolicies(self):
-    #TODO
+    await self.client.send_message(self.president, ("You drew the following 3 policies:\n1: {}\n2: {}\n3: {}\nPlease select a policy to discard by saying "
+                                                        "the number of the policy you'd like to remove").format(self.turnDeck[0],self.turnDeck[1],self.turnDeck[2]))
+    def check(reply):
+      bool1 = (reply.content[0] == "1" or reply.content[0] == "2" or reply.content[0] == "3")
+      bool2 = reply.channel.is_private and reply.author==self.president
+      return (bool1 and bool2)
+    reply = await self.client.wait_for_message(check=check)
+    await self.client.send_message(self.president, "You've passed the other 2 cards to the chancellor.")     
+    if reply.content[0] == "1":
+      self.turnDeck.pop(0)
+    elif reply.content[0] == "2":
+      self.turnDeck.pop(1)
+    else:
+      self.turnDeck.pop(2)
     
   def chancellorPolicies(self):
-    #TODO
+    await self.client.send_message(self.chancellor, ("You were passed the following 2 policies:\n1: {}\n2: {}\nPlease choose a policy to enact by saying "
+                                                         "the number of the policy you'd like to select").format(self.turnDeck[0],self.turnDeck[1]))
+    def check(reply):
+      bool1 = (reply.content[0] == "1" or reply.content[0] == "2" or (reply.content=="!veto" and self.vetoEnabled == True))
+      bool2 = reply.channel.is_private and reply.author==self.chancellor
+      return (bool1 and bool2)
+    reply = await self.client.wait_for_message(check=check)
+    if reply.content[0] == "1":
+      self.enactedPolicy = self.turnDeck[0]
+      await self.client.send_message(self.chancellor, "You've enacted a {} policy".format(self.enactedPolicy))
+    elif reply.content[0] == "2":
+      self.enactedPolicy = self.turnDeck[1]
+      await self.client.send_message(self.chancellor, "You've enacted a {} policy".format(self.enactedPolicy))
     
-  def addPolicy(self): 
-    #Change self.fullDeck
-    #TODO
+  def addPolicy(self, policy): 
+    if policy == "Fascist":
+      self.fascistPolicies++
+      self.fullDeck.pop(len(self.fullDeck)-1)
+    else:
+      self.liberalPolicies++
+      self.fullDeck.pop(0)
     
   def checkIfWon(self):
-    #TODO
+    onlyFascists = True
+    tempBool = True
+    for innedPlayer in self.innedPlayerlist:
+      if not innedPlayer in self.fascists:
+        onlyFascists = False
+    if (self.facistPolicies == 6):
+      await self.client.send_message(self.gameChannel, "The Fascists enacted 6 policies! They win!")
+    elif(self.facistPolicies >= 3 and self.chancellor == self.hitler):
+      await self.client.send_message(self.gameChannel, "The fascists elected Hitler as Chancellor! They win!")
+    elif onlyFascists:
+      await self.client.send_message(self.gameChannel, "The only living players are Fascists! They win!")
+    elif (self.liberalPolicies == 5):
+      await self.client.send_message(self.gameChannel, "The Liberals have enacted 6 policies! They win!")
+    elif not (self.hitler in self.innedPlayerlist):
+      await self.client.send_message(self.gameChannel, "The Liberals have killed Hitler! They win!")
+    else:
+      tempBool = False
+    self.over = tempBool
     
   #Add Pres Powers
   
