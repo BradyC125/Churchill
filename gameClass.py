@@ -84,7 +84,7 @@ class GameInstance:
               await client.send_message(self.gameChannel, ("President {} has nominated {} for Chancellor. Please react to this message "
                                                            "to vote.").format(self.president.name, self.nominatedPlayer.name))
               #Add reactions
-              awat
+              await self.countVote()
             else:
               self.nominatedPlayer = False
               await client.send_message(self.gameChannel, "I'm sorry, but your nominee was term limited! Please nominate someone else.")
