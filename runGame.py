@@ -5,7 +5,7 @@ import logging
 import gameClass
 
 def threeFailures(game):
-  \\TODO
+  #TODO
 
 async def main(game):
   numOfPlayers = len(game.innedPlayerlist)
@@ -16,7 +16,7 @@ async def main(game):
   else:
     game.addRoles(1)
   
-  \\Send role PMs
+  #Send role PMs
   
   game.presidentCounter = random.randrange(0,game.numOfPlayers)
   
