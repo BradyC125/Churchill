@@ -81,9 +81,10 @@ class GameInstance:
           if self.nominatedPlayer in self.innedPlayerlist:
             if (self.nominatedPlayer != self.lastChancellor) and (self.nominatedPlayer != self.lastPresident):
               playerNominated = True
-              await client.send_message(self.gameChannel, ("President {} has nominated {} for Chancellor. Please preface your vote with an '!'. Most "
-                                                           "forms of 'yes' or 'no' are supported.").format(self.president.name,
-                                                                                                           self.nominatedPlayer.name))
+              await client.send_message(self.gameChannel, ("President {} has nominated {} for Chancellor. Please react to this message "
+                                                           "to vote.").format(self.president.name, self.nominatedPlayer.name))
+              #Add reactions
+              awat
             else:
               self.nominatedPlayer = False
               await client.send_message(self.gameChannel, "I'm sorry, but your nominee was term limited! Please nominate someone else.")
