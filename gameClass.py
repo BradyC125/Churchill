@@ -5,7 +5,6 @@ class GameInstance:
     self.presidentCounter = 0
     self.facistPolicies = 0
     self.liberalPolicies = 0
-    self.playerElected = False
     self.voteOutcome = False
     self.nominatedPlayer = False
     self.president = False
