@@ -69,8 +69,31 @@ class GameInstance:
   def assignPres(self):
     self.president = self.innedPlayerlist[self.presidentCounter%self.numOfPlayers]
     
-  def nominations(self):
-    #TODO
+  async def nominations(self):
+    client = self.client
+    self.gameChannel
+    playerNominated = False
+      warningGiven = False
+      while not playerNominated:
+        nominationMessage = await client.wait_for_message(author=self.president, channel=self.gameChannel)
+        try:
+          self.nominatedPlayer = nominationMessage.mentions[0]
+          if self.nominatedPlayer in self.innedPlayerlist:
+            if (self.nominatedPlayer != self.lastChancellor) and (self.nominatedPlayer != self.lastPresident):
+              playerNominated = True
+              await client.send_message(self.gameChannel, ("President {} has nominated {} for Chancellor. Please preface your vote with an '!'. Most "
+                                                           "forms of 'yes' or 'no' are supported.").format(self.president.name,
+                                                                                                           self.nominatedPlayer.name))
+            else:
+              self.nominatedPlayer = False
+              await client.send_message(self.gameChannel, "I'm sorry, but your nominee was term limited! Please nominate someone else.")
+          else:
+            self.nominatedPlayer = False
+            await client.send_message(self.gameChannel, "You didn't enter a valid nomination message!")
+        except IndexError:
+          if not warningGiven:
+            await client.send_message(self.gameChannel, "Please mention the person you're nominating like this: `@user`")
+            warningGiven = True
   
   def countVote(self):
     #TODO
