@@ -1,3 +1,6 @@
+import asyncio
+import discord
+
 class GameInstance:
   def __init__(self, client, channel):
     self.channel = channel
@@ -72,60 +75,60 @@ class GameInstance:
     client = self.client
     self.gameChannel
     playerNominated = False
-      warningGiven = False
-      while not playerNominated:
-        nominationMessage = await client.wait_for_message(author=self.president, channel=self.gameChannel)
-        try:
-          self.nominatedPlayer = nominationMessage.mentions[0]
-          if self.nominatedPlayer in self.innedPlayerlist:
-            if (self.nominatedPlayer != self.lastChancellor) and (self.nominatedPlayer != self.lastPresident):
-              playerNominated = True
-            else:
-              self.nominatedPlayer = False
-              await client.send_message(self.gameChannel, "I'm sorry, but your nominee was term limited! Please nominate someone else.")
+    warningGiven = False
+    while not playerNominated:
+      nominationMessage = await client.wait_for_message(author=self.president, channel=self.gameChannel)
+      try:
+        self.nominatedPlayer = nominationMessage.mentions[0]
+        if self.nominatedPlayer in self.innedPlayerlist:
+          if (self.nominatedPlayer != self.lastChancellor) and (self.nominatedPlayer != self.lastPresident):
+            playerNominated = True
           else:
             self.nominatedPlayer = False
-            await client.send_message(self.gameChannel, "You didn't enter a valid nomination message!")
-        except IndexError:
-          if not warningGiven:
-            await client.send_message(self.gameChannel, "Please mention the person you're nominating like this: `@user`")
-            warningGiven = True
+            await client.send_message(self.gameChannel, "I'm sorry, but your nominee was term limited! Please nominate someone else.")
+        else:
+          self.nominatedPlayer = False
+          await client.send_message(self.gameChannel, "You didn't enter a valid nomination message!")
+      except IndexError:
+        if not warningGiven:
+          await client.send_message(self.gameChannel, "Please mention the person you're nominating like this: `@user`")
+          warningGiven = True
   
-  def vote(self):
+  async def vote(self):
+    client = self.client
     voteArray = {}
     votesCast = 0
-    tempMessage = await client.send_message(self.gameChannel, ("President {} has nominated {} for Chancellor. Please react to this message "
-                                                               "to vote.").format(self.president.name, self.nominatedPlayer.name))
+    tempMessage = await client.send_message(self.gameChannel, "President {} has nominated {} for Chancellor. Please react to this message to vote.".format(self.president.name, self.nominatedPlayer.name))
     await client.add_reaction(tempMessage, '✔')
     await client.add_reaction(tempMessage, '❌')
     for player in self.innedPlayerlist:
       voteArray[player] = "Uncast"
     while not votesCast == len(voteArray):
-      reaction = await self.client.wait_for_reaction(['✔','❌'],message = tempMessage)
+      reaction = await client.wait_for_reaction(['✔','❌'],message = tempMessage)
       if reaction.user in self.innedPlayerlist:
         if reaction.emoji == '✔':
           castVote = "Yes"
         else:
           castVote = "No"
         if voteArray[reaction.user] == "Uncast":
-          await self.client.send_message(self.gameChannel, "{} voted {}".format(reaction.user, castVote.lower()))
+          await client.send_message(self.gameChannel, "{} voted {}".format(reaction.user, castVote.lower()))
           voteArray[reaction.user] = castVote
-          votesCast++
+          votesCast+=1
         elif not castVote == voteArray[reaction.user]:
-          await self.client.send_message(self.gameChannel, "{} changed their vote to {}".format(reaction.user, castVote.lower()))
+          await client.send_message(self.gameChannel, "{} changed their vote to {}".format(reaction.user, castVote.lower()))
           voteArray[reaction.user] = castVote
     yes = 0
     no = 0
     for player in self.innedPlayerlist:
       if voteArray[player] == "Yes":
-        yes++
+        yes+=1
       else:
-        no++
+        no+=1
     if not yes > no:
-      await self.client.send_message(self.gameChannel, "The election failed."
-    return (yes > no)
+      await client.send_message(self.gameChannel, "The election failed.")
+    return yes > no
       
-  def genPolicies(self):
+  async def genPolicies(self):
     if len(self.policyDeck) > 3:
       i = 0
       while i < 3:
@@ -139,7 +142,7 @@ class GameInstance:
       self.policyDeck = self.fullDeck
       await self.genPolicies()
             
-  def presPolicies(self):
+  async def presPolicies(self):
     await self.client.send_message(self.president, ("You drew the following 3 policies:\n1: {}\n2: {}\n3: {}\nPlease select a policy to discard by saying "
                                                         "the number of the policy you'd like to remove").format(self.turnDeck[0],self.turnDeck[1],self.turnDeck[2]))
     def check(reply):
@@ -155,7 +158,7 @@ class GameInstance:
     else:
       self.turnDeck.pop(2)
     
-  def chancellorPolicies(self):
+  async def chancellorPolicies(self):
     await self.client.send_message(self.chancellor, ("You were passed the following 2 policies:\n1: {}\n2: {}\nPlease choose a policy to enact by saying "
                                                          "the number of the policy you'd like to select").format(self.turnDeck[0],self.turnDeck[1]))
     def check(reply):
@@ -172,13 +175,13 @@ class GameInstance:
     
   def addPolicy(self, policy): 
     if policy == "Fascist":
-      self.fascistPolicies++
+      self.fascistPolicies+=1
       self.fullDeck.pop(len(self.fullDeck)-1)
     else:
-      self.liberalPolicies++
+      self.liberalPolicies+=1
       self.fullDeck.pop(0)
     
-  def checkIfWon(self):
+  async def checkIfWon(self):
     onlyFascists = True
     tempBool = True
     for innedPlayer in self.innedPlayerlist:
