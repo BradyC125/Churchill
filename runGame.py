@@ -9,7 +9,7 @@ async def threeFailures(game):
   #TODO
 
 async def main(game):
-  game.started = True
+  game.gameStarted = True
   
   numOfPlayers = len(game.innedPlayerlist)
   if numOfPlayers > 8:
