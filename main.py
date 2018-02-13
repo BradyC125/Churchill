@@ -26,6 +26,10 @@ async def join(member, cID):
   elif not (cID in currentGames):
     currentGames[cID] = gameClass.GameInstance(client, client.get_channel(cID))
 
+async def leave(member, cID):
+  if ((cID in currentGames) and (not currentGames[cID].gameStarted) and member in currentGames[cID].innedPlayerlist):
+    currentGames[cID].innedPlayerlist.remove(member)
+
 async def start(member, cID):
   if not (cID in currentGames):
     return False
@@ -43,9 +47,13 @@ async def on_message(message):
   if command == "!join":
     await join(message.author, message.channel.id)
     await client.send_message(message.channel, "You've successfully joined the player list, {}".format(message.author.name))
+  elif command == "!leave":
+    await leave(message.author, message.channel.id)
   elif command == "!start":
     await start(message.author, message.channel.id)
   elif command == "!endgame" and isAdmin(message.author):
     await endGame(message.channel.id)
+  elif command == "!votecount" and message.channel.id in currentGames:
+    await currentGames[message.channel.id].voteCount()
   
 client.run(token)
