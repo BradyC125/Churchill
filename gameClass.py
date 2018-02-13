@@ -8,7 +8,8 @@ class GameInstance:
     self.presidentCounter = 0
     self.facistPolicies = 0
     self.liberalPolicies = 0
-    self.voteOutcome = False
+    self.gameStarted = False
+    self.over = False
     self.nominatedPlayer = False
     self.president = False
     self.chancellor = False
@@ -19,6 +20,7 @@ class GameInstance:
     self.lastChancellor = False
     self.lastPresident = False
     self.peekEnabled = False
+    self.voteArray = {}
     self.turnDeck = []
     self.fascists = []
     self.fullDeck = ["Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist",
@@ -96,31 +98,31 @@ class GameInstance:
   
   async def vote(self):
     client = self.client
-    voteArray = {}
+    self.voteArray = {}
     votesCast = 0
     tempMessage = await client.send_message(self.gameChannel, "President {} has nominated {} for Chancellor. Please react to this message to vote.".format(self.president.name, self.nominatedPlayer.name))
     await client.add_reaction(tempMessage, '✔')
     await client.add_reaction(tempMessage, '❌')
     for player in self.innedPlayerlist:
-      voteArray[player] = "Uncast"
-    while not votesCast == len(voteArray):
+      self.voteArray[player] = "Uncast"
+    while not votesCast == len(self.voteArray):
       reaction = await client.wait_for_reaction(['✔','❌'],message = tempMessage)
       if reaction.user in self.innedPlayerlist:
         if reaction.emoji == '✔':
           castVote = "Yes"
         else:
           castVote = "No"
-        if voteArray[reaction.user] == "Uncast":
+        if self.voteArray[reaction.user] == "Uncast":
           await client.send_message(self.gameChannel, "{} voted {}".format(reaction.user, castVote.lower()))
-          voteArray[reaction.user] = castVote
+          self.voteArray[reaction.user] = castVote
           votesCast+=1
-        elif not castVote == voteArray[reaction.user]:
+        elif not castVote == self.voteArray[reaction.user]:
           await client.send_message(self.gameChannel, "{} changed their vote to {}".format(reaction.user, castVote.lower()))
-          voteArray[reaction.user] = castVote
+          self.voteArray[reaction.user] = castVote
     yes = 0
     no = 0
     for player in self.innedPlayerlist:
-      if voteArray[player] == "Yes":
+      if self.voteArray[player] == "Yes":
         yes+=1
       else:
         no+=1
@@ -200,6 +202,29 @@ class GameInstance:
     else:
       tempBool = False
     self.over = tempBool
+
+  async def voteCount(self):
+    if len(voteArray) != 0:
+      yesses = "Yes: "
+      nos = "No: "
+      undecided = "Undecided: "
+      for player in innedPlayerlist:
+        if self.voteArray[player] == "Yes":
+          yesses = yesses + "{}, ".format(player.name)
+        elif self.voteArray[player] == "No":
+          nos = nos + "{}, ".format(player.name)
+        else:
+          undecided = undecided + "{}, ".format(player.name)
+      if not len(yesses) == 5:
+        yesses = yesses[:len(yesses)-3]
+      if not len(nos) == 4:
+        nos = nos[:len(nos)-3]
+      if not len(undecided) == 11:
+        undecided = undecided[:len(undecided)-3]
+        await client.send_message(self.gameChannel, "Current vote tally:\n{}\n{}\n{}".format(yesses, nos, undecided))
+      else:
+        await client.send_message(self.gameChannel, "Tally from previous vote:\n{}\n{}".format(yesses, nos))
+        
     
   #Add Pres Powers
   
