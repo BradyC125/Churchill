@@ -9,6 +9,8 @@ async def threeFailures(game):
   #TODO
 
 async def main(game):
+  game.started = True
+  
   numOfPlayers = len(game.innedPlayerlist)
   if numOfPlayers > 8:
     game.addRoles(3)
