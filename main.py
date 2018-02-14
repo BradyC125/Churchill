@@ -46,9 +46,8 @@ async def playerlist(member, cID):
       tempString = "Currently inned players: "
       for player in game.innedPlayerlist:
         tempString = tempString + "{}, ".format(player.name)
-      print(tempString + " /end")
-      tempString = tempString[:len(game.innedPlayerlist)-3]
-      print(tempString + " /end")
+      while tempString.endswith(" ") or tempString.endswith(","):
+        tempString = tempString[:len(tempString)-2]
       await client.send_message(game.gameChannel, tempString)
         
 
