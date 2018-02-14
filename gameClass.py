@@ -218,11 +218,11 @@ class GameInstance:
         else:
           undecided = undecided + "{}, ".format(player.name)
       if not len(yesses) == 5:
-        yesses = yesses[:len(yesses)-3]
+        yesses = yesses[:len(yesses)-2]
       if not len(nos) == 4:
-        nos = nos[:len(nos)-3]
+        nos = nos[:len(nos)-2]
       if not len(undecided) == 11:
-        undecided = undecided[:len(undecided)-3]
+        undecided = undecided[:len(undecided)-2]
         await self.client.send_message(self.gameChannel, "Current vote tally:\n{}\n{}\n{}".format(yesses, nos, undecided))
       else:
         await client.send_message(self.gameChannel, "Tally from previous vote:\n{}\n{}".format(yesses, nos))
