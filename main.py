@@ -21,34 +21,58 @@ async def endGame(cID):
 
 async def join(member, cID):
   if ((cID in currentGames) and (not currentGames[cID].gameStarted) and (not member in currentGames[cID].innedPlayerlist)):
+    await client.send_message(currentGames[cID].gameChannel, "You've successfully joined the player list, {}".format(member.name))
     currentGames[cID].innedPlayerlist.append(member)
   
   elif not (cID in currentGames):
     currentGames[cID] = gameClass.GameInstance(client, client.get_channel(cID))
+    await client.send_message(currentGames[cID].gameChannel, "You've successfully joined the player list, {}".format(member.name))
+    currentGames[cID].innedPlayerlist.append(member)
+
+  else:
+    await client.send_message(currentGames[cID].gameChannel, "You're already on the player list, {}".format(member.name))
 
 async def leave(member, cID):
   if ((cID in currentGames) and (not currentGames[cID].gameStarted) and member in currentGames[cID].innedPlayerlist):
+    await client.send_message(currentGames[cID].gameChannel, "You've successfully left the player list, {}".format(member.name))
     currentGames[cID].innedPlayerlist.remove(member)
 
+async def playerlist(member, cID):
+  if (cID in currentGames):
+    game = currentGames[cID]
+    if len(game.innedPlayerlist) == 0:
+      await client.send_message(game.gameChannel, "There are currently no players waiting to play")
+    else:
+      tempString = "Currently inned players: "
+      for player in game.innedPlayerlist:
+        tempString = tempString + "{}, ".format(player.name)
+      print(tempString + " /end")
+      tempString = tempString[:len(game.innedPlayerlist)-3]
+      print(tempString + " /end")
+      await client.send_message(game.gameChannel, tempString)
+        
+
 async def start(member, cID):
+  minPlayers = 5 
   if not (cID in currentGames):
     return False
   
   game = currentGames[cID]
-  if (game.innedPlayerlist.length >= minPlayers and member in game.innedPlayerlist):
+  if (len(game.innedPlayerlist) >= minPlayers and member in game.innedPlayerlist):
     runGame.main(game)
     
-  elif game.innedPlayerlist < minPlayers:
-    await client.send_message(game.channel, "You need {} players to start a game, but you only have {}".format(minPlayers, game.innedPlayerlist.length))
+  elif member in game.innedPlayerlist:
+    await client.send_message(game.gameChannel, "You need {} players to start a game, but you only have {}".format(minPlayers, len(game.innedPlayerlist)))
 
 @client.event
 async def on_message(message):
   command = message.content.lower().split(" ")[0]
   if command == "!join":
     await join(message.author, message.channel.id)
-    await client.send_message(message.channel, "You've successfully joined the player list, {}".format(message.author.name))
   elif command == "!leave":
     await leave(message.author, message.channel.id)
+  elif command == "!playerlist":
+    await playerlist(message.author, message.channel.id)
   elif command == "!start":
     await start(message.author, message.channel.id)
   elif command == "!endgame" and isAdmin(message.author):
