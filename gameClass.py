@@ -3,7 +3,7 @@ import discord
 
 class GameInstance:
   def __init__(self, client, channel):
-    self.channel = channel
+    self.gameChannel = channel
     self.client = client
     self.presidentCounter = 0
     self.facistPolicies = 0
@@ -21,6 +21,7 @@ class GameInstance:
     self.lastPresident = False
     self.peekEnabled = False
     self.voteArray = {}
+    self.innedPlayerlist = []
     self.turnDeck = []
     self.fascists = []
     self.fullDeck = ["Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist",
@@ -169,11 +170,12 @@ class GameInstance:
       return (bool1 and bool2)
     reply = await self.client.wait_for_message(check=check)
     if reply.content[0] == "1":
-      self.enactedPolicy = self.turnDeck[0]
-      await self.client.send_message(self.chancellor, "You've enacted a {} policy".format(self.enactedPolicy))
+      enactedPolicy = self.turnDeck[0]
+      await self.client.send_message(self.chancellor, "You've enacted a {} policy".format(enactedPolicy))
     elif reply.content[0] == "2":
-      self.enactedPolicy = self.turnDeck[1]
-      await self.client.send_message(self.chancellor, "You've enacted a {} policy".format(self.enactedPolicy))
+      enactedPolicy = self.turnDeck[1]
+      await self.client.send_message(self.chancellor, "You've enacted a {} policy".format(enactedPolicy))
+    return enactedPolicy
     
   def addPolicy(self, policy): 
     if policy == "Fascist":
@@ -221,7 +223,7 @@ class GameInstance:
         nos = nos[:len(nos)-3]
       if not len(undecided) == 11:
         undecided = undecided[:len(undecided)-3]
-        await client.send_message(self.gameChannel, "Current vote tally:\n{}\n{}\n{}".format(yesses, nos, undecided))
+        await self.client.send_message(self.gameChannel, "Current vote tally:\n{}\n{}\n{}".format(yesses, nos, undecided))
       else:
         await client.send_message(self.gameChannel, "Tally from previous vote:\n{}\n{}".format(yesses, nos))
         
