@@ -25,16 +25,16 @@ async def main(game):
   
   while not game.over:
     await game.genPolicies()
-    print("genPolicy complete")
+    print("genPolicy complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
     playerElected = False
     failedElections = 0
     while not playerElected:
       await game.assignPres()
-      print("assignPres complete")
+      print("assignPres complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       await game.nomination()
-      print("nomination complete")
+      print("nomination complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       playerElected = await game.vote()
-      print("vote complete")
+      print("vote complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       if not playerElected:
         if failedElections == 2:
           await threeFailures(game)
@@ -44,17 +44,17 @@ async def main(game):
     game.chancellor = game.nominatedPlayer
     game.nominatedPlayer = False
     await game.checkIfWon()
-    print("checkIfWon complete")
+    print("checkIfWon complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
     if not game.over:
       await game.client.send_message(game.gameChannel, ("The vote succeeded! President {} and Chancellor {} "
                                                         "are now choosing policies.").format(game.president.name, game.chancellor.name))
       game.lastChancellor = game.president
       game.lastPresident = game.chancellor
       await game.presPolicies()
-      print("presPolicies complete")
+      print("presPolicies complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       enactedPolicy = await game.chancellorPolicies()
-      print("chancellorPolicies complete")
+      print("chancellorPolicies complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       await game.addPolicy(enactedPolicy)
-      print("addPolicy complete")
+      print("addPolicy complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       game.presidentCounter += 1
       await game.checkIfWon()
