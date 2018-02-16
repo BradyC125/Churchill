@@ -13,11 +13,11 @@ async def main(game):
   
   numOfPlayers = len(game.innedPlayerlist)
   if numOfPlayers > 8:
-    game.addRoles(3)
+    game.assignRoles(3)
   elif numOfPlayers > 6:
-    game.addRoles(2)
+    game.assignRoles(2)
   else:
-    game.addRoles(1)
+    game.assignRoles(1)
   
   await game.sendRolePMs()
   
