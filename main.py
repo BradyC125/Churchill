@@ -57,7 +57,7 @@ async def start(member, cID):
   
   game = currentGames[cID]
   if (len(game.innedPlayerlist) >= minPlayers and member in game.innedPlayerlist):
-    runGame.main(game)
+    await runGame.main(game)
     
   elif member in game.innedPlayerlist:
     await client.send_message(game.gameChannel, "You need {} players to start a game, but you only have {}".format(minPlayers, len(game.innedPlayerlist)))
@@ -66,16 +66,22 @@ async def start(member, cID):
 async def on_message(message):
   command = message.content.lower().split(" ")[0]
   if command == "!join":
+    print("{} used the JOIN command in {} ({})".format(str(message.author), message.server.name, message.server.id))
     await join(message.author, message.channel.id)
   elif command == "!leave":
+    print("{} used the LEAVE command in {} ({})".format(str(message.author), message.server.name, message.server.id))
     await leave(message.author, message.channel.id)
   elif command == "!playerlist":
+    print("{} used the PLAYERLIST command in {} ({})".format(str(message.author), message.server.name, message.server.id))
     await playerlist(message.author, message.channel.id)
   elif command == "!start":
+    print("{} used the START command in {} ({})".format(str(message.author), message.server.name, message.server.id))
     await start(message.author, message.channel.id)
   elif command == "!endgame" and isAdmin(message.author):
+    print("{} used the ENDGAME command in {} ({})".format(str(message.author), message.server.name, message.server.id))
     await endGame(message.channel.id)
   elif command == "!votecount" and message.channel.id in currentGames:
+    print("{} used the VOTECOUNT command in {} ({})".format(str(message.author), message.server.name, message.server.id))
     await currentGames[message.channel.id].voteCount()
   
 client.run(token)
