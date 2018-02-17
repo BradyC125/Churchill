@@ -7,8 +7,8 @@ import gameClass
 async def threeFailures(game):
   policyIndex = random.randrange(0,len(game.policyDeck))
   enactedPolicy = game.policyDeck.pop(policyIndex)
-  await client.send_message(game.gameChannel, "Because there were 3 failed governments in a row, a {} policy was enacted automatically".format(enactedPolicy))
-  game.addPolicy(enactedPolicy)
+  await game.client.send_message(game.gameChannel, "Because there were 3 failed governments in a row, a {} policy was enacted automatically".format(enactedPolicy))
+  await game.addPolicy(enactedPolicy)
   print("addPolicy complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
 
 async def main(game):
@@ -58,7 +58,7 @@ async def main(game):
       print("presPolicies complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       enactedPolicy = await game.chancellorPolicies()
       print("chancellorPolicies complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
-      game.addPolicy(enactedPolicy)
+      await game.addPolicy(enactedPolicy)
       print("addPolicy complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       game.presidentCounter += 1
       await game.checkIfWon()
