@@ -30,14 +30,14 @@ class GameInstance:
     self.policyDeck = self.fullDeck
     
   def addFascist(self):
-    newFascist = self.innedPlayerlist[random.randrange(1,len(self.innedPlayerlist))]
+    newFascist = self.innedPlayerlist[random.randrange(0,len(self.innedPlayerlist))]
     if newFascist in self.fascists:
       self.addFascist()
     else:
       self.fascists.append(newFascist)
         
   def addHitler(self):
-    self.hitler = self.innedPlayerlist[random.randrange(1,len(self.innedPlayerlist))]
+    self.hitler = self.innedPlayerlist[random.randrange(0,len(self.innedPlayerlist))]
     if self.hitler in self.fascists:
       self.addHitler()
   
@@ -80,7 +80,7 @@ class GameInstance:
     self.gameChannel
     playerNominated = False
     warningGiven = False
-    await client.send_message(self.gameChannel, "{0} is president. Please tag the user you'd like to nominate, {0}".format(self.president))
+    await client.send_message(self.gameChannel, "{0} is president. Please tag the user you'd like to nominate, {0}".format(self.president.name))
     while not playerNominated:
       nominationMessage = await client.wait_for_message(author=self.president, channel=self.gameChannel)
       try:
@@ -116,11 +116,11 @@ class GameInstance:
         else:
           castVote = "No"
         if self.voteArray[awaitedReaction.user] == "Uncast":
-          await client.send_message(self.gameChannel, "{} voted {}".format(awaitedReaction.user, castVote.lower()))
+          await client.send_message(self.gameChannel, "{} voted {}".format(awaitedReaction.user.name, castVote.lower()))
           self.voteArray[awaitedReaction.user] = castVote
           votesCast+=1
         elif not castVote == self.voteArray[awaitedReaction.user]:
-          await client.send_message(self.gameChannel, "{} changed their vote to {}".format(awaitedReaction.user, castVote.lower()))
+          await client.send_message(self.gameChannel, "{} changed their vote to {}".format(awaitedReaction.user.name, castVote.lower()))
           self.voteArray[awaitedReaction.user] = castVote
     yes = 0
     no = 0
@@ -208,7 +208,7 @@ class GameInstance:
     self.over = tempBool
 
   async def voteCount(self):
-    if len(voteArray) != 0:
+    if len(self.voteArray) != 0:
       yesses = "Yes: "
       nos = "No: "
       undecided = "Undecided: "
