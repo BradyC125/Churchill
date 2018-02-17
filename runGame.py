@@ -5,7 +5,7 @@ import logging
 import gameClass
 
 async def threeFailures(game):
-  print("Debug")
+  print("Pass threeFailures")
   #TODO
 
 async def main(game):
