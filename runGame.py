@@ -21,7 +21,7 @@ async def main(game):
   
   await game.sendRolePMs()
   
-  game.presidentCounter = random.randrange(0,game.numOfPlayers)
+  game.presidentCounter = random.randrange(0,len(game.innedPlayerlist))
   
   while not game.over:
     await game.genPolicies()
@@ -54,7 +54,7 @@ async def main(game):
       print("presPolicies complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       enactedPolicy = await game.chancellorPolicies()
       print("chancellorPolicies complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
-      await game.addPolicy(enactedPolicy)
+      game.addPolicy(enactedPolicy)
       print("addPolicy complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       game.presidentCounter += 1
       await game.checkIfWon()
