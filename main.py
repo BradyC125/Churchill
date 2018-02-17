@@ -84,5 +84,8 @@ async def on_message(message):
   elif command == "!votecount" and message.channel.id in currentGames:
     print("{} used the VOTECOUNT command in {} ({})".format(str(message.author), message.server.name, message.server.id))
     await currentGames[message.channel.id].voteCount()
+  elif command == "!policies" and message.channel.id in currentGames:
+    print("{} used the POLICIES command in {} ({})".format(str(message.author), message.server.name, message.server.id))
+    await currentGames[message.channel.id].policyCount()
   
 client.run(token)
