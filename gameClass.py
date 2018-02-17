@@ -131,6 +131,8 @@ class GameInstance:
         no+=1
     if not yes > no:
       await client.send_message(self.gameChannel, "The election failed.")
+    else:
+      await self.checkIfWon()
     return yes > no
       
   async def genPolicies(self):
@@ -178,7 +180,7 @@ class GameInstance:
     elif reply.content[0] == "2":
       enactedPolicy = self.turnDeck[1]
       await self.client.send_message(self.chancellor, "You've enacted a {} policy".format(enactedPolicy))
-       await self.client.send_message(self.gameChannel, "President {} and Chancellor {} enacted a {} policy".format(self.president.name, self.chancellor.name, enactedPolicy))
+      await self.client.send_message(self.gameChannel, "President {} and Chancellor {} enacted a {} policy".format(self.president.name, self.chancellor.name, enactedPolicy))
     return enactedPolicy
     
   def addPolicy(self, policy): 
