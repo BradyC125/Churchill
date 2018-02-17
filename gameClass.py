@@ -80,6 +80,7 @@ class GameInstance:
     self.gameChannel
     playerNominated = False
     warningGiven = False
+    await client.send_message(self.gameChannel, "{0} is president. Please tag the user you'd like to nominate, {0}".format(self.president))
     while not playerNominated:
       nominationMessage = await client.wait_for_message(author=self.president, channel=self.gameChannel)
       try:
@@ -108,19 +109,19 @@ class GameInstance:
     for player in self.innedPlayerlist:
       self.voteArray[player] = "Uncast"
     while not votesCast == len(self.voteArray):
-      reaction = await client.wait_for_reaction(['✔','❌'],message = tempMessage)
-      if reaction.user in self.innedPlayerlist:
-        if reaction.emoji == '✔':
+      awaitedReaction = await client.wait_for_reaction(['✔','❌'],message = tempMessage)
+      if awaitedReaction.user in self.innedPlayerlist:
+        if awaitedReaction.reaction.emoji == '✔':
           castVote = "Yes"
         else:
           castVote = "No"
-        if self.voteArray[reaction.user] == "Uncast":
-          await client.send_message(self.gameChannel, "{} voted {}".format(reaction.user, castVote.lower()))
-          self.voteArray[reaction.user] = castVote
+        if self.voteArray[awaitedReaction.user] == "Uncast":
+          await client.send_message(self.gameChannel, "{} voted {}".format(awaitedReaction.user, castVote.lower()))
+          self.voteArray[awaitedReaction.user] = castVote
           votesCast+=1
-        elif not castVote == self.voteArray[reaction.user]:
-          await client.send_message(self.gameChannel, "{} changed their vote to {}".format(reaction.user, castVote.lower()))
-          self.voteArray[reaction.user] = castVote
+        elif not castVote == self.voteArray[awaitedReaction.user]:
+          await client.send_message(self.gameChannel, "{} changed their vote to {}".format(awaitedReaction.user, castVote.lower()))
+          self.voteArray[awaitedReaction.user] = castVote
     yes = 0
     no = 0
     for player in self.innedPlayerlist:
