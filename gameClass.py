@@ -120,6 +120,15 @@ class GameInstance:
           self.voteArray[awaitedReaction.user] = castVote
           votesCast+=1
         elif not castVote == self.voteArray[awaitedReaction.user]:
+          try:
+            if castVote == "Yes":
+              await client.remove_reaction(tempMessage, '❌', awaitedReaction.user)
+            else:
+              await client.remove_reaction(tempMessage, '✔', awaitedReaction.user)
+          except Forbidden:
+            print("Could not remove reaction in {} ({}) because proper permissions were not met".format(self.gameChannel, self.gameChannel.server))
+          except NotFound:
+            pass
           await client.send_message(self.gameChannel, "{} changed their vote to {}".format(awaitedReaction.user.name, castVote.lower()))
           self.voteArray[awaitedReaction.user] = castVote
     yes = 0
