@@ -58,6 +58,7 @@ async def start(member, cID):
   game = currentGames[cID]
   if (len(game.innedPlayerlist) >= minPlayers and member in game.innedPlayerlist):
     await runGame.main(game)
+    currentGames[cID] = gameClass.GameInstance(client, client.get_channel(cID))
     
   elif member in game.innedPlayerlist:
     await client.send_message(game.gameChannel, "You need {} players to start a game, but you only have {}".format(minPlayers, len(game.innedPlayerlist)))
