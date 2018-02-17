@@ -5,8 +5,11 @@ import logging
 import gameClass
 
 async def threeFailures(game):
-  print("Pass threeFailures")
-  #TODO
+  policyIndex = random.randrange(0,len(game.policyDeck))
+  enactedPolicy = game.policyDeck.pop(policyIndex)
+  await client.send_message(game.gameChannel, "Because there were 3 failed governments in a row, a {} policy was enacted automatically".format(enactedPolicy))
+  game.addPolicy(enactedPolicy)
+  print("addPolicy complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
 
 async def main(game):
   game.gameStarted = True
@@ -24,8 +27,6 @@ async def main(game):
   game.presidentCounter = random.randrange(0,len(game.innedPlayerlist))
   
   while not game.over:
-    await game.genPolicies()
-    print("genPolicy complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
     playerElected = False
     failedElections = 0
     while not playerElected:
@@ -36,11 +37,12 @@ async def main(game):
       playerElected = await game.vote()
       print("vote complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       if not playerElected:
-        if failedElections == 2:
+        failedElections += 1
+        game.presidentCounter+=1
+        if failedElections == 3:
           await threeFailures(game)
-        else:
-          failedElections += 1
-          game.presidentCounter += 1
+          failedElections = 0
+        
     game.chancellor = game.nominatedPlayer
     game.nominatedPlayer = False
     await game.checkIfWon()
@@ -50,6 +52,8 @@ async def main(game):
                                                         "are now choosing policies.").format(game.president.name, game.chancellor.name))
       game.lastChancellor = game.president
       game.lastPresident = game.chancellor
+      await game.genPolicies()
+      print("genPolicy complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       await game.presPolicies()
       print("presPolicies complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       enactedPolicy = await game.chancellorPolicies()
