@@ -121,9 +121,9 @@ class GameInstance:
               await client.remove_reaction(tempMessage, '❌', awaitedReaction.user)
             else:
               await client.remove_reaction(tempMessage, '✔', awaitedReaction.user)
-          except Forbidden:
+          except discord.Forbidden:
             print("Could not remove reaction in {} ({}) because proper permissions were not met".format(self.gameChannel, self.gameChannel.server))
-          except NotFound:
+          except discord.NotFound:
             pass
           await client.send_message(self.gameChannel, "{} changed their vote to {}".format(awaitedReaction.user.name, castVote.lower()))
           self.voteArray[awaitedReaction.user] = castVote
@@ -159,11 +159,11 @@ class GameInstance:
     overwrite.send_messages = False
     try:
       await self.client.edit_channel_permissions(self.gameChannel, self.president, overwrite)
-    except Forbidden:
+    except discord.Forbidden:
       print("Could not mute {} in {} ({}) because proper permissions were not met".format(self.president.name, self.gameChannel, self.gameChannel.server))
     try:
       await self.client.edit_channel_permissions(self.gameChannel, self.chancellor, overwrite)
-    except Forbidden:
+    except discord.Forbidden:
       print("Could not mute {} in {} ({}) because proper permissions were not met".format(self.chancellor.name, self.gameChannel, self.gameChannel.server))
     await self.client.send_message(self.president, ("You drew the following 3 policies:\n1: {}\n2: {}\n3: {}\nPlease select a policy to discard by saying "
                                                         "the number of the policy you'd like to remove").format(self.turnDeck[0],self.turnDeck[1],self.turnDeck[2]))
@@ -204,11 +204,11 @@ class GameInstance:
     overwrite.send_messages = True
     try:
       await client.edit_channel_permissions(self.gameChannel, self.president, overwrite)
-    except Forbidden:
+    except discord.Forbidden:
       print("Could not mute {} in {} ({}) because proper permissions were not met".format(self.president.name, self.gameChannel, self.gameChannel.server))
     try:
       await client.edit_channel_permissions(self.gameChannel, self.chancellor, overwrite)
-    except Forbidden:
+    except discord.Forbidden:
       print("Could not mute {} in {} ({}) because proper permissions were not met".format(self.chancellor.name, self.gameChannel, self.gameChannel.server))
     if policy == "Fascist":
       self.fascistPolicies+=1
