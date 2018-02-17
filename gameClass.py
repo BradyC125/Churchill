@@ -85,7 +85,7 @@ class GameInstance:
       nominationMessage = await client.wait_for_message(author=self.president, channel=self.gameChannel)
       try:
         self.nominatedPlayer = nominationMessage.mentions[0]
-        if self.nominatedPlayer in self.innedPlayerlist:
+        if self.nominatedPlayer in self.innedPlayerlist and not self.nominatedPlayer == self.president:
           if (self.nominatedPlayer != self.lastChancellor) and (self.nominatedPlayer != self.lastPresident):
             playerNominated = True
           else:
@@ -174,9 +174,11 @@ class GameInstance:
     if reply.content[0] == "1":
       enactedPolicy = self.turnDeck[0]
       await self.client.send_message(self.chancellor, "You've enacted a {} policy".format(enactedPolicy))
+      await self.client.send_message(self.gameChannel, "President {} and Chancellor {} enacted a {} policy".format(self.president.name, self.chancellor.name, enactedPolicy))
     elif reply.content[0] == "2":
       enactedPolicy = self.turnDeck[1]
       await self.client.send_message(self.chancellor, "You've enacted a {} policy".format(enactedPolicy))
+       await self.client.send_message(self.gameChannel, "President {} and Chancellor {} enacted a {} policy".format(self.president.name, self.chancellor.name, enactedPolicy))
     return enactedPolicy
     
   def addPolicy(self, policy): 
@@ -212,7 +214,7 @@ class GameInstance:
       yesses = "Yes: "
       nos = "No: "
       undecided = "Undecided: "
-      for player in innedPlayerlist:
+      for player in self.innedPlayerlist:
         if self.voteArray[player] == "Yes":
           yesses = yesses + "{}, ".format(player.name)
         elif self.voteArray[player] == "No":
@@ -227,7 +229,7 @@ class GameInstance:
         undecided = undecided[:len(undecided)-2]
         await self.client.send_message(self.gameChannel, "Current vote tally:\n{}\n{}\n{}".format(yesses, nos, undecided))
       else:
-        await client.send_message(self.gameChannel, "Tally from previous vote:\n{}\n{}".format(yesses, nos))
+        await self.client.send_message(self.gameChannel, "Tally from previous vote:\n{}\n{}".format(yesses, nos))
         
     
   #Add Pres Powers
