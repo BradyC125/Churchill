@@ -141,18 +141,21 @@ class GameInstance:
     return yes > no
       
   async def genPolicies(self):
-    if len(self.policyDeck) > 3:
-      i = 0
-      while i < 3:
-        chosenPolicy = random.randrange(0,len(self.policyDeck))
-        self.turnDeck.append(self.policyDeck.pop(chosenPolicy))
-        i = i + 1
-    elif len(self.policyDeck) == 3:
-      self.turnDeck = list(self.policyDeck)
-      self.policyDeck = self.fullDeck
-    else:
-      self.policyDeck = self.fullDeck
-      await self.genPolicies()
+    turnDeckSelected = False
+    while not turnDeckSelected:
+      if len(self.policyDeck) > 3:
+        i = 0
+        while i < 3:
+          chosenPolicy = random.randrange(0,len(self.policyDeck))
+          self.turnDeck.append(self.policyDeck.pop(chosenPolicy))
+          i = i + 1
+        turnDeckSelected = True
+      elif len(self.policyDeck) == 3:
+        self.turnDeck = list(self.policyDeck)
+        self.policyDeck = []
+        turnDeckSelected = True
+      else:
+        self.policyDeck = list(self.fullDeck)
             
   async def presPolicies(self):
     overwrite = discord.PermissionOverwrite()
