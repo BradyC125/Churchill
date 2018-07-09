@@ -21,9 +21,55 @@ class GameInstance:
     self.innedPlayerlist = []
     self.turnDeck = []
     self.fascists = []
+    self.flavor = ["Hitler", "Fascist", "Liberal"]
     self.fullDeck = ["Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist","Fascist",
                      "Liberal","Liberal","Liberal","Liberal","Liberal","Liberal"]
-    self.policyDeck = self.fullDeck
+    self.policyDeck = self.fullDeck[:]
+
+  def setFrameStory(self, storymode):
+    storymode = " ".join(storymode).lower()
+    print("<{}>".format(storymode))
+    
+    if storymode == "mistborn":
+      self.flavor = ["The Lord Ruler", "Obligator", "Skaa"]
+      self.fullDeck = ["Obligator","Obligator","Obligator","Obligator","Obligator","Obligator","Obligator","Obligator","Obligator","Obligator","Obligator",
+                     "Skaa","Skaa","Skaa","Skaa","Skaa","Skaa"]
+      self.policyDeck = self.fullDeck[:]
+      
+    elif storymode == "stormlight archive":
+      self.flavor = ["Iyatil", "Ghostblood", "Radiant"]
+      self.fullDeck = ["Ghostblood","Ghostblood","Ghostblood","Ghostblood","Ghostblood","Ghostblood","Ghostblood","Ghostblood","Ghostblood","Ghostblood","Ghostblood",
+                     "Radiant","Radiant","Radiant","Radiant","Radiant","Radiant"]
+      self.policyDeck = self.fullDeck[:]
+      
+    elif storymode == "red rising":
+      self.flavor = ["Ares", "Red", "Gold"]
+      self.fullDeck = ["Red","Red","Red","Red","Red","Red","Red","Red","Red","Red","Red",
+                     "Gold","Gold","Gold","Gold","Gold","Gold"]
+      self.policyDeck = self.fullDeck[:]
+      
+    elif storymode == "star wars":
+      self.flavor = ["Palpatine", "Sith", "Jedi"]
+      self.fullDeck = ["Sith","Sith","Sith","Sith","Sith","Sith","Sith","Sith","Sith","Sith","Sith",
+                     "Jedi","Jedi","Jedi","Jedi","Jedi","Jedi"]
+      self.policyDeck = self.fullDeck[:]
+      
+    elif storymode == "harry potter":
+      self.flavor = ["Voldemort", "Death Eater", "Muggle"]
+      self.fullDeck = ["Death Eater","Death Eater","Death Eater","Death Eater","Death Eater","Death Eater","Death Eater","Death Eater","Death Eater","Death Eater","Death Eater",
+                     "Muggle","Muggle","Muggle","Muggle","Muggle","Muggle"]
+      self.policyDeck = self.fullDeck[:]
+      
+    elif storymode == "worm":
+      self.flavor = ["Coil", "Villain", "Hero"]
+      self.fullDeck = ["Villain","Villain","Villain","Villain","Villain","Villain","Villain","Villain","Villain","Villain","Villain",
+                     "Hero","Hero","Hero","Hero","Hero","Hero"]
+      self.policyDeck = self.fullDeck[:]
+
+    else:
+      return False
+
+    return True
     
   def addFascist(self):
     newFascist = self.innedPlayerlist[random.randrange(0,len(self.innedPlayerlist))]
@@ -47,26 +93,26 @@ class GameInstance:
     for player in game.innedPlayerlist:
       if player == game.hitler:
         if len(game.fascists) == 1:
-          await client.send_message(player, "You're Hitler. Your teammate is {}".format(game.fascists[0].name))
+          await client.send_message(player, "You're {}. Your teammate is {}".format(game.flavor[0],game.fascists[0].name))
         else:
-          await client.send_message(player, "You're Hitler. Because you have more than one teammate, you don't get to know who they are")
+          await client.send_message(player, "You're {}. Because you have more than one teammate, you don't get to know who they are".format(game.flavor[0]))
       elif player in game.fascists:
         if len(game.fascists) == 1:
-          await client.send_message(player, "You're a fascist. Hitler is {}".format(game.hitler.name))
+          await client.send_message(player, "You're a {}. {} is {}".format(game.flavor[1],game.flavor[0],game.hitler.name))
         elif len(game.fascists) == 2:
           if game.fascists[0] == player:
-            await client.send_message(player, "You're a fascist. Hitler is {} and your teammate is {}".format(game.hitler.name, game.fascists[1].name))
+            await client.send_message(player, "You're a {}. {} is {} and your teammate is {}".format(game.flavor[1],game.flavor[0],game.hitler.name, game.fascists[1].name))
           else:
-            await client.send_message(player, "You're a fascist. Hitler is {} and your teammate is {}".format(game.hitler.name, game.fascists[0].name))
+            await client.send_message(player, "You're a {}. {} is {} and your teammate is {}".format(game.flavor[1],game.flavor[0],game.hitler.name, game.fascists[0].name))
         else:
           if game.fascists[0] == player:
-            await client.send_message(player, "You're a fascist. Hitler is {} and your teammates are {} and {}".format(game.hitler.name, game.fascists[1].name, game.fascists[2].name))
+            await client.send_message(player, "You're a {}. {} is {} and your teammates are {} and {}".format(game.flavor[1],game.flavor[0],game.hitler.name, game.fascists[1].name, game.fascists[2].name))
           elif game.fascists[1] == player:
-            await client.send_message(player, "You're a fascist. Hitler is {} and your teammates are {} and {}".format(game.hitler.name, game.fascists[0].name, game.fascists[2].name))
+            await client.send_message(player, "You're a {}. {} is {} and your teammates are {} and {}".format(game.flavor[1],game.flavor[0],game.hitler.name, game.fascists[0].name, game.fascists[2].name))
           else:
-            await client.send_message(player, "You're a fascist. Hitler is {} and your teammates are {} and {}".format(game.hitler.name, game.fascists[1].name, game.fascists[0].name))
+            await client.send_message(player, "You're a {}. {} is {} and your teammates are {} and {}".format(game.flavor[1],game.flavor[0],game.hitler.name, game.fascists[1].name, game.fascists[0].name))
       else:
-        await client.send_message(player, "You're a liberal for this round, {}".format(player.name))
+        await client.send_message(player, "You're a {} for this round, {}".format(game.flavor[2], player.name))
   
   async def assignPres(self):
     self.president = self.innedPlayerlist[self.presidentCounter%len(self.innedPlayerlist)]
@@ -155,7 +201,7 @@ class GameInstance:
         self.policyDeck = []
         turnDeckSelected = True
       else:
-        self.policyDeck = list(self.fullDeck)
+        self.policyDeck = self.fullDeck[:]
             
   async def presPolicies(self):
     overwrite = discord.PermissionOverwrite()
@@ -213,7 +259,7 @@ class GameInstance:
       await client.edit_channel_permissions(self.gameChannel, self.chancellor, overwrite)
     except discord.Forbidden:
       print("Could not mute {} in {} ({}) because proper permissions were not met".format(self.chancellor.name, self.gameChannel, self.gameChannel.server))
-    if policy == "Fascist":
+    if policy == self.flavor[1]:
       self.fascistPolicies+=1
       self.fullDeck.pop(len(self.fullDeck)-1)
     else:
@@ -227,15 +273,15 @@ class GameInstance:
       if not innedPlayer in self.fascists:
         onlyFascists = False
     if (self.fascistPolicies == 6):
-      await self.client.send_message(self.gameChannel, "The Fascists enacted 6 policies! They win!")
+      await self.client.send_message(self.gameChannel, "The {} enacted 6 policies! They win!".format(self.flavor[1] + "s"))
     elif(self.fascistPolicies >= 3 and self.chancellor == self.hitler):
-      await self.client.send_message(self.gameChannel, "The fascists elected Hitler as Chancellor! They win!")
+      await self.client.send_message(self.gameChannel, "The {} elected {} as Chancellor! They win!".format(self.flavor[1]+"s", self.flavor[0]))
     elif onlyFascists:
-      await self.client.send_message(self.gameChannel, "The only living players are Fascists! They win!")
+      await self.client.send_message(self.gameChannel, "The only living players are {}! They win!".format(self.flavor[1] + "s"))
     elif (self.liberalPolicies == 5):
-      await self.client.send_message(self.gameChannel, "The Liberals have enacted 6 policies! They win!")
+      await self.client.send_message(self.gameChannel, "The {} have enacted 6 policies! They win!".format(self.flavor[2] + "s"))
     elif not (self.hitler in self.innedPlayerlist):
-      await self.client.send_message(self.gameChannel, "The Liberals have killed Hitler! They win!")
+      await self.client.send_message(self.gameChannel, "The {} have killed {}! They win!".format(self.flavor[2] + "s", self.flavor[0]))
     else:
       tempBool = False
     self.over = tempBool
@@ -264,7 +310,7 @@ class GameInstance:
 
   async def policyCount(self):
     if self.gameStarted:
-      await self.client.send_message(self.gameChannel, "There are currently {0.liberalPolicies} liberal policies and {0.fascistPolicies} fascist policies in play".format(self))      
+      await self.client.send_message(self.gameChannel, "There are currently {0.liberalPolicies} {0.flavor[2]} policies and {0.fascistPolicies} {0.flavor[1]} policies in play".format(self))      
     
   #Add Pres Powers
   

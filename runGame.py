@@ -62,3 +62,6 @@ async def main(game):
       print("addPolicy complete in channel {} ({})".format(game.gameChannel.name, game.gameChannel.server.name))
       game.presidentCounter += 1
       await game.checkIfWon()
+    else:
+      print("Game Over")
+  print("Final Message")

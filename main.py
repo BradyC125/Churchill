@@ -49,6 +49,15 @@ async def playerlist(member, cID):
       tempString = tempString[:len(tempString)-2]
       await client.send_message(game.gameChannel, tempString)
         
+async def storymode(cID, message):
+  if not (cID in currentGames):
+    currentGames[cID] = gameClass.GameInstance(client, client.get_channel(cID))
+  tempBool = currentGames[cID].setFrameStory(message)
+  if not tempBool:
+    await client.send_message(currentGames[cID].gameChannel, ("That wasn't a recognized storymode. The accepted options are `Mistborn`, `Stormlight Archive`, "
+                                                              "`Red Rising`, `Worm`, `Harry Potter`, and `Star Wars`"))
+  else:
+    await client.send_message(currentGames[cID].gameChannel, "Set game mode to {}.".format(" ".join(text.lower().capitalize() for text in message)))
 
 async def start(member, cID):
   minPlayers = 5 
@@ -56,11 +65,12 @@ async def start(member, cID):
     return False
   
   game = currentGames[cID]
-  if (len(game.innedPlayerlist) >= minPlayers and member in game.innedPlayerlist):
+  if (len(game.innedPlayerlist) >= minPlayers and not game.gameStarted and member in game.innedPlayerlist):
+    game.gameStarted = True
     await runGame.main(game)
     currentGames[cID] = gameClass.GameInstance(client, client.get_channel(cID))
     
-  elif member in game.innedPlayerlist:
+  elif member in game.innedPlayerlist and not game.gameStarted:
     await client.send_message(game.gameChannel, "You need {} players to start a game, but you only have {}".format(minPlayers, len(game.innedPlayerlist)))
 
 @client.event
@@ -87,5 +97,8 @@ async def on_message(message):
   elif command == "!policies" and message.channel.id in currentGames:
     print("{} used the POLICIES command in {} ({})".format(str(message.author), message.server.name, message.server.id))
     await currentGames[message.channel.id].policyCount()
+  elif command == "!storymode":
+    print("{} used the STORYMODE command in {} ({})".format(str(message.author), message.server.name, message.server.id))
+    await storymode(message.channel.id, message.content.split(" ")[1:])
   
 client.run(token)
